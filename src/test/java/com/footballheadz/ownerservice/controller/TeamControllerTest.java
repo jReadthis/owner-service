@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -133,11 +134,22 @@ class TeamControllerTest {
     }
 
     @Test
-    void getById() {
+    void getTeamById() throws Exception {
+        // Arrange
+        when(teamService.getTeamById(id)).thenReturn(team1);
+
+        // Act Assert a
+        mockMvc.perform(get("/teams/{id}", team1.getId())
+        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(team1.getId()));
+
+        verify(teamService,times(1)).getTeamById(team1.getId());
     }
 
     @Test
-    void delete() {
+    void deleteTeam() {
     }
 
     public static String asJsonString(final Object obj) {
